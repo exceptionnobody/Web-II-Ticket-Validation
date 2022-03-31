@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
-data class ValidatePayload (val zone: Char, val token: String)
+data class ValidatePayload (val zone: String, val token: String)
 
 @RestController
 class TicketController(val ticketService: TicketService) {
