@@ -9,12 +9,12 @@ class Utility private constructor() {
     companion object {
         private val stringKey = "LHoT7nKj0gb7M7TFAnZFxHzJVa1yOMUfVUaRAEB11pU="
         private val secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(stringKey))
-        fun generateToken(offsetDays: Int, vz: String): String {
+        fun generateToken(ticketID:Long,offsetDays: Int, vz: String): String {
 
             val date = Calendar.getInstance()
             date.add(Calendar.DATE, offsetDays)
             val claims = mapOf<String,Any>(
-                    "sub" to 1,
+                    "sub" to ticketID,
                     "exp" to date.time,
                     "vz" to vz,
                     "iat" to Calendar.getInstance().time

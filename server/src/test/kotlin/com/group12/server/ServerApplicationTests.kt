@@ -25,7 +25,7 @@ class ServerApplicationTests() {
 	@Test
 	fun acceptValidZoneAndTicket() {
 		val baseUrl = "http://localhost:$port"
-		val token = Utility.generateToken(10, "0123456789")
+		val token = Utility.generateToken(0,10, "0123456789")
 		val request = HttpEntity(ValidatePayload("1", token))
 		val response = restTemplate.postForEntity<Void>("$baseUrl/validate", request)
 		assert(response.statusCode == HttpStatus.OK)
@@ -34,7 +34,7 @@ class ServerApplicationTests() {
 	@Test
 	fun rejectInvalidZone() {
 		val baseUrl = "http://localhost:$port"
-		val token = Utility.generateToken(10, "1")
+		val token = Utility.generateToken(1,10, "1")
 		val request = HttpEntity(ValidatePayload("", token))
 		val response = restTemplate.postForEntity<Void>("$baseUrl/validate", request)
 		assert(response.statusCode == HttpStatus.FORBIDDEN)
@@ -43,7 +43,7 @@ class ServerApplicationTests() {
 	@Test
 	fun rejectWrongZone() {
 		val baseUrl = "http://localhost:$port"
-		val token = Utility.generateToken(10, "1")
+		val token = Utility.generateToken(2,10, "1")
 		val request = HttpEntity(ValidatePayload("2", token))
 		val response = restTemplate.postForEntity<Void>("$baseUrl/validate", request)
 		assert(response.statusCode == HttpStatus.FORBIDDEN)
@@ -61,7 +61,7 @@ class ServerApplicationTests() {
 	@Test
 	fun rejectWrongToken() {
 		val baseUrl = "http://localhost:$port"
-		val token = Utility.generateToken(-10, "1") + "12345"
+		val token = Utility.generateToken(3,-10, "1") + "12345"
 		val request = HttpEntity(ValidatePayload("1", token))
 		val response = restTemplate.postForEntity<Void>("$baseUrl/validate", request)
 		assert(response.statusCode == HttpStatus.FORBIDDEN)
@@ -70,7 +70,7 @@ class ServerApplicationTests() {
 	@Test
 	fun rejectExpiredToken() {
 		val baseUrl = "http://localhost:$port"
-		val token = Utility.generateToken(-10, "1")
+		val token = Utility.generateToken(4,-10, "1")
 		val request = HttpEntity(ValidatePayload("1", token))
 		val response = restTemplate.postForEntity<Void>("$baseUrl/validate", request)
 		assert(response.statusCode == HttpStatus.FORBIDDEN)

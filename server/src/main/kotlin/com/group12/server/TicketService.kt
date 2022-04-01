@@ -46,8 +46,8 @@ class TicketService(private val secretKey: SecretKey) : TicketServiceInterface {
                 throw ValidationException()
             if(ticketMap.containsKey(ticket))
                 throw ValidationException()
-            ticketMap.put(ticket,token)
-        } catch (e: JwtException) {
+            ticketMap[ticket]=token
+        } catch (e: Exception) {
             throw ValidationException()
         }
     }
