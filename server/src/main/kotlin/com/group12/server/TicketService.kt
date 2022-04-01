@@ -4,6 +4,7 @@ import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
 import org.springframework.stereotype.Service
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import javax.crypto.SecretKey
 
 class ValidationException : Exception()
@@ -17,7 +18,7 @@ interface TicketServiceInterface {
 class TicketService(private val secretKey: SecretKey) : TicketServiceInterface {
 
     private val jwtParser = Jwts.parserBuilder().setSigningKey(secretKey).build()
-
+    private val ticketMap = ConcurrentHashMap<Long,String>(mutableMapOf(400L to "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOjUwMCwiZXhwIjoxNjUwMDYwMDAwLCJ2eiI6IjEiLCJpYXQiOjE2NDg4MjY0NTl9.eMjGT8OhaIa14rCAv7OmnEF5ds2hHtaYOvWYFyjt-74"))
     // TODO: Please remove this test function when it becomes useless
     override fun generateTicket() : String {
         val now = Calendar.getInstance()
@@ -27,7 +28,7 @@ class TicketService(private val secretKey: SecretKey) : TicketServiceInterface {
         date.set(Calendar.MINUTE,0)
         date.set(Calendar.MILLISECOND,0)
         date.set(Calendar.SECOND,0)
-        val claims = mapOf<String,Any>("sub" to 500, "exp" to date.time,"vz" to "1", "iat" to now.time)
+        val claims = mapOf<String,Any>("sub" to 500L, "exp" to date.time,"vz" to "1", "iat" to now.time)
         return Jwts.builder().setClaims(claims).signWith(secretKey).compact()
     }
 
@@ -39,9 +40,13 @@ class TicketService(private val secretKey: SecretKey) : TicketServiceInterface {
             val jws = jwtParser.parseClaimsJws(token)
             val now = Calendar.getInstance().time
             val vz : String = jws.body["vz"] as String
+            val ticket = jws.body.subject.toLong()
             if (now > jws.body.expiration ||
-                !vz.contains(zone))
+                !vz.trim().contains(zone.trim()))
                 throw ValidationException()
+            if(ticketMap.containsKey(ticket))
+                throw ValidationException()
+            ticketMap.put(ticket,token)
         } catch (e: JwtException) {
             throw ValidationException()
         }
