@@ -23,7 +23,7 @@ module.exports =  function() {
 
     } else {
 
-        token = jwt.sign({vz: "1"}, Buffer.from("LHoT7nKj0gb7M7TFAnZFxHzJVa1yOMUfVUaRAEB11pU=", 'base64'), {header: { typ: undefined}, expiresIn: "1d"})
+        token = jwt.sign({vz: "1", sub:500}, Buffer.from("LHoT7nKj0gb7M7TFAnZFxHzJVa1yOMUfVUaRAEB11pU=", 'base64'), {header: { typ: undefined}, expiresIn: "1d"})
         return {token,zone: "1"}
        }
 }

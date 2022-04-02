@@ -1,5 +1,8 @@
 package com.group12.server
 
+import com.group12.server.controller.ValidatePayload
+import com.group12.server.exception.ValidationException
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -8,6 +11,7 @@ import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpStatus
+import java.util.concurrent.atomic.AtomicInteger
 
 @SpringBootTest(
 	webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -74,6 +78,38 @@ class ServerApplicationTests() {
 		val request = HttpEntity(ValidatePayload("1", token))
 		val response = restTemplate.postForEntity<Void>("$baseUrl/validate", request)
 		assert(response.statusCode == HttpStatus.FORBIDDEN)
+	}
+	@Test
+	fun rejectValidatedToken() {
+		val baseUrl = "http://localhost:$port"
+		val token = Utility.generateToken(500,10, "1")
+		val request = HttpEntity(ValidatePayload("1", token))
+		restTemplate.postForEntity<Void>("$baseUrl/validate", request)
+		val response = restTemplate.postForEntity<Void>("$baseUrl/validate", request)
+		assert(response.statusCode == HttpStatus.FORBIDDEN)
+	}
+	@Test
+	fun rejectValidatedTokenMultipleThreads() {
+		val baseUrl = "http://localhost:$port"
+		val token = Utility.generateToken(500,10, "1")
+		val count403 = AtomicInteger()
+		val count  = AtomicInteger()
+		val request = HttpEntity(ValidatePayload("1", token))
+		val tl = mutableListOf<Thread>()
+		for (i in 1..16) {
+			tl.add(Thread{
+					val response = restTemplate.postForEntity<Void>("$baseUrl/validate", request)
+				if (response.statusCode == HttpStatus.FORBIDDEN)
+					count403.incrementAndGet()
+				else
+					count.incrementAndGet()
+			})
+		}
+		tl.forEach { it.run() }
+		tl.forEach { it.join() }
+		Assertions.assertEquals(1,count.get())
+		Assertions.assertEquals(15, count403.get())
+
 	}
 
 }
