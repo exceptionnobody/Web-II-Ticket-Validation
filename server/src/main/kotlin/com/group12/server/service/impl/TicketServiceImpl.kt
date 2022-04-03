@@ -8,14 +8,12 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import javax.crypto.SecretKey
 
-
-
-
 @Service
 class TicketServiceImpl(private val secretKey: SecretKey) : TicketService {
 
     private val jwtParser = Jwts.parserBuilder().setSigningKey(secretKey).build()
     private val ticketMap = ConcurrentHashMap(mutableMapOf(400L to "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOjUwMCwiZXhwIjoxNjUwMDYwMDAwLCJ2eiI6IjEiLCJpYXQiOjE2NDg4MjY0NTl9.eMjGT8OhaIa14rCAv7OmnEF5ds2hHtaYOvWYFyjt-74"))
+
     // TODO: Please remove this test function when it becomes useless
     override fun generateTicket() : String {
         val now = Calendar.getInstance()
@@ -28,6 +26,7 @@ class TicketServiceImpl(private val secretKey: SecretKey) : TicketService {
         val claims = mapOf<String,Any>("sub" to 500L, "exp" to date.time,"vz" to "1", "iat" to now.time)
         return Jwts.builder().setClaims(claims).signWith(secretKey).compact()
     }
+
     @Synchronized
     private fun checkIfValidated(ticket : Long,token : String) : Boolean{
         if(ticketMap.containsKey(ticket))
@@ -37,6 +36,7 @@ class TicketServiceImpl(private val secretKey: SecretKey) : TicketService {
             return false
         }
     }
+
     override fun validateTicket(zone: String, token: String) {
         try {
             if (zone.trim().isEmpty() ||

@@ -66,6 +66,7 @@ class UnitTests() {
             ticketService.validateTicket(zone, token)
         }
     }
+
     @Test
     fun rejectJWTAlreadyValidated() {
         val zone = "1"
@@ -76,6 +77,7 @@ class UnitTests() {
             ticketService.validateTicket(zone, token)
         }
     }
+
     @Test
     fun rejectJWTAlreadyValidatedMultiThreads() {
         val zone = "1"
