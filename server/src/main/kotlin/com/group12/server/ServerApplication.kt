@@ -13,8 +13,11 @@ class ServerApplication() {
 	// Key generated with:
 	// val key = Keys.secretKeyFor(SignatureAlgorithm.HS256)
 	// val stringKey = Encoders.BASE64.encode(key.encoded)
+	// Stored and read from application.properties file
 	@Value("\${key}")
 	lateinit var stringKey: String
+
+	// Returns a secret key
 	@Bean
 	fun secretKey(): SecretKey {
 		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(stringKey))

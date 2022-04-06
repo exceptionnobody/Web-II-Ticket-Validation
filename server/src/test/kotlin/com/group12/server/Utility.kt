@@ -5,16 +5,18 @@ import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import java.util.*
 
+// Contains utility properties and functions for tests
 class Utility private constructor() {
     companion object {
         private val stringKey = "LHoT7nKj0gb7M7TFAnZFxHzJVa1yOMUfVUaRAEB11pU="
         private val secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(stringKey))
-        fun generateToken(ticketID:Long,offsetDays: Int, vz: String): String {
 
+        // Generates and returns a signed JWT
+        fun generateToken(ticketId: Long, offsetDays: Int, vz: String): String {
             val date = Calendar.getInstance()
             date.add(Calendar.DATE, offsetDays)
             val claims = mapOf<String,Any>(
-                    "sub" to ticketID,
+                    "sub" to ticketId,
                     "exp" to date.time,
                     "vz" to vz,
                     "iat" to Calendar.getInstance().time

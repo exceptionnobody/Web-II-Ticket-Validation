@@ -8,6 +8,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import javax.crypto.SecretKey
 
+// Server services implementation
 @Service
 class TicketServiceImpl(private val secretKey: SecretKey) : TicketService {
 
@@ -15,6 +16,7 @@ class TicketServiceImpl(private val secretKey: SecretKey) : TicketService {
     private val ticketMap = ConcurrentHashMap(mutableMapOf(400L to "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOjUwMCwiZXhwIjoxNjUwMDYwMDAwLCJ2eiI6IjEiLCJpYXQiOjE2NDg4MjY0NTl9.eMjGT8OhaIa14rCAv7OmnEF5ds2hHtaYOvWYFyjt-74"))
 
     // TODO: Please remove this test function when it becomes useless
+    // Returns a new valid signed JWT
     override fun generateTicket() : String {
         val now = Calendar.getInstance()
         val date = Calendar.getInstance()
@@ -27,15 +29,19 @@ class TicketServiceImpl(private val secretKey: SecretKey) : TicketService {
         return Jwts.builder().setClaims(claims).signWith(secretKey).compact()
     }
 
+    // Checks if a ticket has already been used
+    // Returns true if the ticket has already been used
+    // Saves the ticket and returns false if the ticket has never been used
     @Synchronized
-    private fun checkIfValidated(ticket : Long,token : String) : Boolean{
-        if(ticketMap.containsKey(ticket))
-           return true
-        else {
+    private fun checkIfValidated(ticket: Long, token: String) : Boolean{
+        return if (ticketMap.containsKey(ticket)) {
+            true
+        } else {
             ticketMap[ticket] = token
-            return false
+            false
         }
     }
+
 
     override fun validateTicket(zone: String, token: String) {
         try {
@@ -47,7 +53,8 @@ class TicketServiceImpl(private val secretKey: SecretKey) : TicketService {
             val vz : String = jws.body["vz"] as String
             val ticket = jws.body.subject.toLong()
             if (now > jws.body.expiration ||
-                !vz.trim().contains(zone.trim()) || checkIfValidated(ticket,token))
+                !vz.trim().contains(zone.trim()) ||
+                checkIfValidated(ticket,token))
                 throw ValidationException()
         } catch (e: Exception) {
             throw ValidationException()

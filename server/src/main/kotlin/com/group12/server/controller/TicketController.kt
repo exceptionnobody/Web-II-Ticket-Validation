@@ -9,21 +9,23 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
-data class ValidatePayload (val zone: String, val token: String)
+// Ticket DTO
+data class TicketPayload(val zone: String, val token: String)
 
+// Endpoint controller
 @RestController
 class TicketController(val ticketService: TicketService) {
 
     // TODO: Please remove this test function when it becomes useless
-    // Generate token
+    // Generates a valid JWT
     @GetMapping("/generate")
     fun generate() : String {
         return ticketService.generateTicket()
     }
 
-    // Validate token
+    // Validates a ticket
     @PostMapping("/validate")
-    fun validate(@RequestBody p: ValidatePayload) : ResponseEntity<Void> {
+    fun validate(@RequestBody p: TicketPayload) : ResponseEntity<Unit> {
         try {
             ticketService.validateTicket(p.zone, p.token)
         } catch (e: ValidationException) {

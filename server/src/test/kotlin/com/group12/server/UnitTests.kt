@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.util.concurrent.atomic.AtomicInteger
 
+// Ticket service unit tests
 @SpringBootTest
 class UnitTests() {
     @Autowired
     lateinit var ticketService: TicketServiceImpl
 
+    // Tests a valid ticket
     @Test
     fun acceptValidJWT() {
         Assertions.assertDoesNotThrow() {
@@ -22,6 +24,7 @@ class UnitTests() {
         }
     }
 
+    // Tests a ticket with wrong zones field
     @Test
     fun rejectInvalidJWT_ValidityZoneNotIncluded() {
         Assertions.assertThrows(ValidationException::class.java) {
@@ -31,6 +34,7 @@ class UnitTests() {
         }
     }
 
+    // Tests a ticket with an expired JWT
     @Test
     fun rejectInvalidJWT_Expired() {
         Assertions.assertThrows(ValidationException::class.java) {
@@ -40,6 +44,7 @@ class UnitTests() {
         }
     }
 
+    // Tests a ticket with a wrong JWT
     @Test
     fun rejectInvalidJWT_WrongFormat() {
         Assertions.assertThrows(ValidationException::class.java) {
@@ -49,6 +54,7 @@ class UnitTests() {
         }
     }
 
+    // Tests a ticket with an empty zone
     @Test
     fun rejectInvalidJWT_EmptyZone() {
         Assertions.assertThrows(ValidationException::class.java) {
@@ -58,6 +64,7 @@ class UnitTests() {
         }
     }
 
+    // Tests a ticket with an empty JWT
     @Test
     fun rejectInvalidJWT_EmptyToken() {
         Assertions.assertThrows(ValidationException::class.java) {
@@ -67,6 +74,11 @@ class UnitTests() {
         }
     }
 
+    //
+    // Ticket usage tests
+    //
+
+    // Tests an already validated ticket
     @Test
     fun rejectJWTAlreadyValidated() {
         val zone = "1"
