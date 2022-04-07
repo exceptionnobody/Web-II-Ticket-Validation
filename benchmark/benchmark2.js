@@ -10,14 +10,14 @@ module.exports = function() {
     return {zone: '1',token}
 }
 */
-
+const testValue=2000
 //const testValue = 100
 //const testValue = 1000
 //const testValue = 10000
 //const testValue = 100000
 //const testValue = 1000000
 //const testValue = 10000000
-const testValue = 100000000
+//const testValue = 100000000
 //const testValue = 4000000000
 
 module.exports =  function() {

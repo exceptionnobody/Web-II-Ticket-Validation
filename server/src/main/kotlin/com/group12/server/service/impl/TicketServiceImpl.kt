@@ -29,18 +29,6 @@ class TicketServiceImpl(private val secretKey: SecretKey) : TicketService {
         return Jwts.builder().setClaims(claims).signWith(secretKey).compact()
     }
 
-    // Checks if a ticket has already been used
-    // Returns true if the ticket has already been used
-    // Saves the ticket and returns false if the ticket has never been used
-    @Synchronized
-    private fun checkIfValidated(ticket: Long, token: String) : Boolean{
-        return if (ticketMap.containsKey(ticket)) {
-            true
-        } else {
-            ticketMap[ticket] = token
-            false
-        }
-    }
 
     // Validates a ticket
     // A ticket is valid if all the following conditions are true:
@@ -59,9 +47,12 @@ class TicketServiceImpl(private val secretKey: SecretKey) : TicketService {
             val vz : String = jws.body["vz"] as String
             val ticket = jws.body.subject.toLong()
             if (now > jws.body.expiration ||
-                !vz.trim().contains(zone.trim()) ||
-                checkIfValidated(ticket, token))
+                !vz.trim().contains(zone.trim()))
                 throw ValidationException()
+            //check if the ticket is already validated
+            //if you want to run the app without ticket validation check the comment the next 3 lines of code
+           // if(ticketMap.putIfAbsent(ticket,token)!= null)
+           //     throw  ValidationException()
         } catch (e: Exception) {
             throw ValidationException()
         }

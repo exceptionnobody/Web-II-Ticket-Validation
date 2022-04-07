@@ -9,7 +9,7 @@ class ConcurrencyModel(lista: List<Pair<Int, Int>>) {
     }
         .toMutableList())
     //val f = {i:Int -> println("At $i concurrent clients, expect ${model.throughputAtConcurrency(i.toDouble())} req/sec")}
-    val g = {i:Int -> println("$i ${model.throughputAtConcurrency(i.toDouble())}")}
+    val g = {i:Int -> println("$i,${model.throughputAtConcurrency(i.toDouble())}")}
 
     fun constructAngPrintModel(numPoint: Int){
         for(i in 1..numPoint)
@@ -40,7 +40,7 @@ fun main(){
     //val value7 = listOf((1 to 467), (2 to 1055), (4 to 1280),(8 to 1334), (16 to 1332), (32 to 1418), (64 to 1436))
     //ConcurrencyModel(value7).constructAngPrintModel(500)
 
-    val value8 = listOf((1 to 478), (2 to 988), (4 to 1247),(8 to 1313), (16 to 1338), (32 to 1372), (64 to 1416))
-    ConcurrencyModel(value8).constructAngPrintModel(500)
+    val value8 = listOf((1 to 691), (2 to 1454), (4 to 1343),(8 to 1423), (16 to 1294), (32 to 1328), (64 to 1479))
+    ConcurrencyModel(value8).constructAngPrintModel(1000)
 
 }
