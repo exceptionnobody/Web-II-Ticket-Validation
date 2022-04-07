@@ -8,7 +8,7 @@ import java.util.*
 // Contains utility properties and functions for tests
 class Utility private constructor() {
     companion object {
-        private val stringKey = "LHoT7nKj0gb7M7TFAnZFxHzJVa1yOMUfVUaRAEB11pU="
+        private const val stringKey = "LHoT7nKj0gb7M7TFAnZFxHzJVa1yOMUfVUaRAEB11pU="
         private val secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(stringKey))
 
         // Generates and returns a signed JWT

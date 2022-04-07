@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean
 import javax.crypto.SecretKey
 
 @SpringBootApplication
-class ServerApplication() {
+class ServerApplication {
 	// Key generated with:
 	// val key = Keys.secretKeyFor(SignatureAlgorithm.HS256)
 	// val stringKey = Encoders.BASE64.encode(key.encoded)

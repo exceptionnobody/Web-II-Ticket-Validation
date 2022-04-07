@@ -33,7 +33,7 @@ class ServerApplicationTests {
 		val baseUrl = "http://localhost:$port"
 		val token = Utility.generateToken(0,10, "0123456789")
 		val request = HttpEntity(TicketPayload("1", token))
-		val response = restTemplate.postForEntity<Void>("$baseUrl/validate", request)
+		val response = restTemplate.postForEntity<Unit>("$baseUrl/validate", request)
 		assert(response.statusCode == HttpStatus.OK)
 	}
 
@@ -43,7 +43,7 @@ class ServerApplicationTests {
 		val baseUrl = "http://localhost:$port"
 		val token = Utility.generateToken(1,10, "1")
 		val request = HttpEntity(TicketPayload("", token))
-		val response = restTemplate.postForEntity<Void>("$baseUrl/validate", request)
+		val response = restTemplate.postForEntity<Unit>("$baseUrl/validate", request)
 		assert(response.statusCode == HttpStatus.FORBIDDEN)
 	}
 
@@ -53,7 +53,7 @@ class ServerApplicationTests {
 		val baseUrl = "http://localhost:$port"
 		val token = Utility.generateToken(2,10, "1")
 		val request = HttpEntity(TicketPayload("2", token))
-		val response = restTemplate.postForEntity<Void>("$baseUrl/validate", request)
+		val response = restTemplate.postForEntity<Unit>("$baseUrl/validate", request)
 		assert(response.statusCode == HttpStatus.FORBIDDEN)
 	}
 
@@ -63,7 +63,7 @@ class ServerApplicationTests {
 		val baseUrl = "http://localhost:$port"
 		val token = ""
 		val request = HttpEntity(TicketPayload("1", token))
-		val response = restTemplate.postForEntity<Void>("$baseUrl/validate", request)
+		val response = restTemplate.postForEntity<Unit>("$baseUrl/validate", request)
 		assert(response.statusCode == HttpStatus.FORBIDDEN)
 	}
 
@@ -73,7 +73,7 @@ class ServerApplicationTests {
 		val baseUrl = "http://localhost:$port"
 		val token = Utility.generateToken(3,-10, "1") + "12345"
 		val request = HttpEntity(TicketPayload("1", token))
-		val response = restTemplate.postForEntity<Void>("$baseUrl/validate", request)
+		val response = restTemplate.postForEntity<Unit>("$baseUrl/validate", request)
 		assert(response.statusCode == HttpStatus.FORBIDDEN)
 	}
 
@@ -83,7 +83,7 @@ class ServerApplicationTests {
 		val baseUrl = "http://localhost:$port"
 		val token = Utility.generateToken(4,-10, "1")
 		val request = HttpEntity(TicketPayload("1", token))
-		val response = restTemplate.postForEntity<Void>("$baseUrl/validate", request)
+		val response = restTemplate.postForEntity<Unit>("$baseUrl/validate", request)
 		assert(response.statusCode == HttpStatus.FORBIDDEN)
 	}
 
@@ -97,11 +97,12 @@ class ServerApplicationTests {
 		val baseUrl = "http://localhost:$port"
 		val token = Utility.generateToken(500,10, "1")
 		val request = HttpEntity(TicketPayload("1", token))
-		restTemplate.postForEntity<Void>("$baseUrl/validate", request)
-		val response = restTemplate.postForEntity<Void>("$baseUrl/validate", request)
+		restTemplate.postForEntity<Unit>("$baseUrl/validate", request)
+		val response = restTemplate.postForEntity<Unit>("$baseUrl/validate", request)
 		assert(response.statusCode == HttpStatus.FORBIDDEN)
 	}
 
+	// Tests multiple concurrent requests to validate
 	@Test
 	fun rejectValidatedTokenMultipleThreads() {
 		val baseUrl = "http://localhost:$port"
@@ -112,14 +113,14 @@ class ServerApplicationTests {
 		val tl = mutableListOf<Thread>()
 		for (i in 1..16) {
 			tl.add(Thread{
-					val response = restTemplate.postForEntity<Void>("$baseUrl/validate", request)
+				val response = restTemplate.postForEntity<Unit>("$baseUrl/validate", request)
 				if (response.statusCode == HttpStatus.FORBIDDEN)
 					count403.incrementAndGet()
 				else
 					count.incrementAndGet()
 			})
 		}
-		tl.forEach { it.run() }
+		tl.forEach { it.start() }
 		tl.forEach { it.join() }
 		Assertions.assertEquals(1,count.get())
 		Assertions.assertEquals(15, count403.get())

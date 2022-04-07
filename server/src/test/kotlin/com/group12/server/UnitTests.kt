@@ -10,14 +10,14 @@ import java.util.concurrent.atomic.AtomicInteger
 
 // Ticket service unit tests
 @SpringBootTest
-class UnitTests() {
+class UnitTests {
     @Autowired
     lateinit var ticketService: TicketServiceImpl
 
     // Tests a valid ticket
     @Test
     fun acceptValidJWT() {
-        Assertions.assertDoesNotThrow() {
+        Assertions.assertDoesNotThrow {
             val zone = "1"
             val token = Utility.generateToken(0,10, "0123456789")
             ticketService.validateTicket(zone, token)
@@ -90,6 +90,7 @@ class UnitTests() {
         }
     }
 
+    // Tests multiple concurrent requests to validate
     @Test
     fun rejectJWTAlreadyValidatedMultiThreads() {
         val zone = "1"
@@ -99,17 +100,15 @@ class UnitTests() {
         val tl = mutableListOf<Thread>()
         for (i in 1..10) {
             tl.add(Thread{
-              try {
-                  ticketService.validateTicket(zone,token)
-                  count.incrementAndGet()
-              }
-              catch (e: ValidationException)
-              {
-                 countEx.incrementAndGet()
-              }
+                try {
+                    ticketService.validateTicket(zone,token)
+                    count.incrementAndGet()
+                } catch (e: ValidationException) {
+                    countEx.incrementAndGet()
+                }
             })
         }
-        tl.forEach { it.run() }
+        tl.forEach { it.start() }
         tl.forEach { it.join() }
         Assertions.assertEquals(1,count.get())
         Assertions.assertEquals(9, countEx.get())
