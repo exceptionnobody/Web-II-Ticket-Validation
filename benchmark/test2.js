@@ -2,7 +2,7 @@
 
 const jwt = require('jsonwebtoken');
 
-//Command: loadtest.cmd -n numbreq -c concurrency -p .\test.js -T application/json http://localhost:8080/validate
+//Command: loadtest.cmd -n numbreq -c concurrency -p .\test1.js -T application/json http://localhost:8080/validate
 
 /*
 module.exports = function() {
@@ -37,22 +37,15 @@ module.exports =  function() {
 //const testValue = 10000000
 const testValue = 100000000
 //const testValue = 4000000000
-module.exports =  function() {
 
+module.exports =  function() {
     const v = Math.floor(Math.random() * testValue);
+    let threshold = (testValue % 2 === 0) ? testValue/2 : (testValue-1)/2
     let token
-            let threshold
-            if(testValue % 2 == 0)
-                threshold = testValue/2
-            else
-                threshold = (testValue-1)/2
     if (v < threshold) {
         token = jwt.sign({vz: '1', sub:v}, 'LHoT7nKj0gb7M7TFAnZFxHzJVa1yOMUfVUaRAEB11U', {expiresIn: "10h"});
-        return {token,zone: "1"}
-
     } else {
-
         token = jwt.sign({vz: "1", sub:v}, Buffer.from("LHoT7nKj0gb7M7TFAnZFxHzJVa1yOMUfVUaRAEB11pU=", 'base64'), {header: { typ: undefined}, expiresIn: "1d"})
-        return {token,zone: "1"}
     }
+    return {token,zone: "1"}
 }
