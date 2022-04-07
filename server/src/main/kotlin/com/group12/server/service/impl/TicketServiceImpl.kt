@@ -50,7 +50,8 @@ class TicketServiceImpl(private val secretKey: SecretKey) : TicketService {
                 !vz.trim().contains(zone.trim()))
                 throw ValidationException()
             //check if the ticket is already validated
-            //if you want to run the app without ticket validation check the comment the next 3 lines of code
+            //if you want to run the app without ticket validation check the comment the next 2 lines of code
+            //beware if you comment those lines some test are gonna files because they check point 6
             if(ticketMap.putIfAbsent(ticket,token)!= null)
                 throw  ValidationException()
         } catch (e: Exception) {
