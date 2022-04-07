@@ -1,8 +1,5 @@
 'use strict';
-
 const jwt = require('jsonwebtoken');
-
-//Command: loadtest.cmd -n numbreq -c concurrency -p .\test1.js -T application/json http://localhost:8080/validate
 
 /*
 module.exports = function() {
@@ -15,21 +12,21 @@ module.exports = function() {
 */
 
 module.exports =  function() {
-    const v = Math.random()
+    const key = "LHoT7nKj0gb7M7TFAnZFxHzJVa1yOMUfVUaRAEB11pU="
+    const random_value = Math.random()
     let token
-    if (v < 0.5) {
+    if (random_value < 0.5) {
         token = jwt.sign(
-            {vz: '1'},
-            'wrong',
-            {expiresIn: "10h"}
+            { vz: "1" },
+            "wrong-key",
+            { expiresIn: "10h" }
         )
     } else {
         token = jwt.sign(
-            {vz: "1", sub:500},
-            Buffer.from("LHoT7nKj0gb7M7TFAnZFxHzJVa1yOMUfVUaRAEB11pU=", 'base64'),
-            {header: { typ: undefined}, expiresIn: "1d"}
+            { vz: "1", sub: 500 },
+            Buffer.from(key, "base64"),
+            { header: { typ: undefined }, expiresIn: "1d"}
         )
     }
     return {token, zone: "1"}
 }
-
