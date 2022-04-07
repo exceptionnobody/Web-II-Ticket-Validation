@@ -1,77 +1,70 @@
 package com.group12.server
 
-import io.jsonwebtoken.Jwts
+import com.group12.server.exception.ValidationException
+import com.group12.server.service.impl.TicketServiceImpl
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import java.util.*
-import javax.crypto.SecretKey
+import java.util.concurrent.atomic.AtomicInteger
 
+// Ticket service unit tests
 @SpringBootTest
-class UnitTests() {
+class UnitTests {
     @Autowired
-    lateinit var ticketService: TicketService
-    @Autowired
-    lateinit var secretKey: SecretKey
+    lateinit var ticketService: TicketServiceImpl
 
-    fun generateToken(offsetDays: Int, vz: String): String {
-        val date = Calendar.getInstance()
-        date.add(Calendar.DATE, offsetDays)
-        val claims = mapOf<String,Any>(
-            "sub" to "token",
-            "exp" to date.time,
-            "vz" to vz,
-            "iat" to Calendar.getInstance().time
-        )
-        return Jwts.builder().setClaims(claims).signWith(secretKey).compact()
-    }
-
+    // Tests a valid ticket
     @Test
     fun acceptValidJWT() {
-        Assertions.assertDoesNotThrow() {
+        Assertions.assertDoesNotThrow {
             val zone = "1"
-            val token = generateToken(10, "0123456789")
+            val token = Utility.generateToken(0,10, "0123456789")
             ticketService.validateTicket(zone, token)
         }
     }
 
+    // Tests a ticket with wrong zones field
     @Test
     fun rejectInvalidJWT_ValidityZoneNotIncluded() {
         Assertions.assertThrows(ValidationException::class.java) {
             val zone = "2"
-            val token = generateToken(10, "1")
+            val token = Utility.generateToken(1,10, "1")
             ticketService.validateTicket(zone, token)
         }
     }
 
+    // Tests a ticket with an expired JWT
     @Test
     fun rejectInvalidJWT_Expired() {
         Assertions.assertThrows(ValidationException::class.java) {
             val zone = "1"
-            val token = generateToken(-10, "1")
+            val token = Utility.generateToken(2,-10, "1")
             ticketService.validateTicket(zone, token)
         }
     }
 
+    // Tests a ticket with a wrong JWT
     @Test
     fun rejectInvalidJWT_WrongFormat() {
         Assertions.assertThrows(ValidationException::class.java) {
             val zone = "1"
-            val token = generateToken(10, "1") + "12345"
+            val token = Utility.generateToken(3,10, "1") + "12345"
             ticketService.validateTicket(zone, token)
         }
     }
 
+    // Tests a ticket with an empty zone
     @Test
     fun rejectInvalidJWT_EmptyZone() {
         Assertions.assertThrows(ValidationException::class.java) {
             val zone = ""
-            val token = generateToken(10, "1")
+            val token = Utility.generateToken(4,10, "1")
             ticketService.validateTicket(zone, token)
         }
     }
 
+    // Tests a ticket with an empty JWT
     @Test
     fun rejectInvalidJWT_EmptyToken() {
         Assertions.assertThrows(ValidationException::class.java) {
@@ -79,5 +72,45 @@ class UnitTests() {
             val token = ""
             ticketService.validateTicket(zone, token)
         }
+    }
+
+    //
+    // Ticket usage tests
+    //
+
+    // Tests an already validated ticket
+    @Test
+    fun rejectJWTAlreadyValidated() {
+        val zone = "1"
+        val validToken = Utility.generateToken(500,10, "1")
+        ticketService.validateTicket(zone, validToken)
+        Assertions.assertThrows(ValidationException::class.java) {
+            val token = Utility.generateToken(500,10, "1")
+            ticketService.validateTicket(zone, token)
+        }
+    }
+
+    // Tests multiple concurrent requests to validate
+    @Test
+    fun rejectJWTAlreadyValidatedMultiThreads() {
+        val zone = "1"
+        val token = Utility.generateToken(1000,10, "1")
+        val countEx = AtomicInteger()
+        val count  = AtomicInteger()
+        val tl = mutableListOf<Thread>()
+        for (i in 1..10) {
+            tl.add(Thread{
+                try {
+                    ticketService.validateTicket(zone,token)
+                    count.incrementAndGet()
+                } catch (e: ValidationException) {
+                    countEx.incrementAndGet()
+                }
+            })
+        }
+        tl.forEach { it.start() }
+        tl.forEach { it.join() }
+        Assertions.assertEquals(1,count.get())
+        Assertions.assertEquals(9, countEx.get())
     }
 }

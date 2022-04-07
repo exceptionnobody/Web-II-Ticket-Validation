@@ -23,6 +23,9 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-api:0.11.2")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
+	// My imports
+	implementation("io.github.nefilim.kjwt:kjwt-jwks:0.5.1")
+	implementation("com.codahale:usl4j:0.7.0")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
