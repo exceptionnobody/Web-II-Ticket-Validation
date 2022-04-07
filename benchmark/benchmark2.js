@@ -1,24 +1,8 @@
 'use strict';
 const jwt = require('jsonwebtoken');
 
-/*
-module.exports = function() {
-   let token = jwt.sign({vz: "1"}, Buffer.from("LHoT7nKj0gb7M7TFAnZFxHzJVa1yOMUfVUaRAEB11pU=", 'base64'), {
-       header: {typ: undefined},
-       expiresIn: "1d"
-   })
-    return {zone: '1',token}
-}
-*/
+//change Max range for tickets ids
 const testValue=2000
-//const testValue = 100
-//const testValue = 1000
-//const testValue = 10000
-//const testValue = 100000
-//const testValue = 1000000
-//const testValue = 10000000
-//const testValue = 100000000
-//const testValue = 4000000000
 
 module.exports =  function() {
     const key = "LHoT7nKj0gb7M7TFAnZFxHzJVa1yOMUfVUaRAEB11pU="

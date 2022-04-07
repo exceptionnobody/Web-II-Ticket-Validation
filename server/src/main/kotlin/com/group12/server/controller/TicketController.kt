@@ -16,13 +16,6 @@ data class TicketPayload(val zone: String, val token: String)
 @RestController
 class TicketController(val ticketService: TicketService) {
 
-    // TODO: Please remove this test function when it becomes useless
-    // Generates a valid JWT
-    @GetMapping("/generate")
-    fun generate() : String {
-        return ticketService.generateTicket()
-    }
-
     // Validates a ticket
     @PostMapping("/validate")
     fun validate(@RequestBody p: TicketPayload) : ResponseEntity<Unit> {

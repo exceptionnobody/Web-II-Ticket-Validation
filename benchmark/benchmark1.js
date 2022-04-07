@@ -1,16 +1,6 @@
 'use strict';
 const jwt = require('jsonwebtoken');
 
-/*
-module.exports = function() {
-   let token = jwt.sign({vz: "1"}, Buffer.from("LHoT7nKj0gb7M7TFAnZFxHzJVa1yOMUfVUaRAEB11pU=", 'base64'), {
-       header: {typ: undefined},
-       expiresIn: "1d"
-   })
-    return {zone: '1',token}
-}
-*/
-
 module.exports =  function() {
     const key = "LHoT7nKj0gb7M7TFAnZFxHzJVa1yOMUfVUaRAEB11pU="
     const random_value = Math.random()
