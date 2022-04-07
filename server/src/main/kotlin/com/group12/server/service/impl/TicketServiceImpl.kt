@@ -51,8 +51,8 @@ class TicketServiceImpl(private val secretKey: SecretKey) : TicketService {
                 throw ValidationException()
             //check if the ticket is already validated
             //if you want to run the app without ticket validation check the comment the next 3 lines of code
-           // if(ticketMap.putIfAbsent(ticket,token)!= null)
-           //     throw  ValidationException()
+            if(ticketMap.putIfAbsent(ticket,token)!= null)
+                throw  ValidationException()
         } catch (e: Exception) {
             throw ValidationException()
         }
