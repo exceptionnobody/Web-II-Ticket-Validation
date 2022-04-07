@@ -2,6 +2,7 @@ package com.group12.server
 
 import com.codahale.usl4j.Measurement
 import com.codahale.usl4j.Model
+import java.io.File
 
 class ConcurrencyModel(lista: List<Pair<Int, Int>>) {
     private val model = Model.build(lista.asIterable().map {
@@ -16,6 +17,14 @@ class ConcurrencyModel(lista: List<Pair<Int, Int>>) {
             g(i)
     }
 
+    fun printModelToCsv(numPoint: Int) {
+        val file = File("./docs/measures.csv")
+        file.writeText("Concurrency,Req/sec\n")
+        for (i in 1..numPoint) {
+            file.appendText("$i,${model.throughputAtConcurrency(i.toDouble())}\n")
+        }
+    }
+
 }
 
 fun main(){
@@ -25,7 +34,7 @@ fun main(){
     //val value8 = listOf((1 to 1883), (2 to 4704), (4 to 5070),(8 to 5076), (16 to 5113), (32 to 4823), (64 to 5312))
     //val value8 = listOf((1 to 318), (2 to 757), (4 to 1038),(8 to 1367), (16 to 1110), (32 to 1520), (64 to 1077))
     val value8 = listOf((1 to 832), (2 to 1165), (4 to 1704),(8 to 1811), (16 to 1530), (32 to 1538), (64 to 1253))
-    println("Concurrency,Req/sec")
-    ConcurrencyModel(value8).constructAngPrintModel(500)
-
+    val measures = ConcurrencyModel(value8)
+    measures.constructAngPrintModel(500)
+    measures.printModelToCsv(500)
 }
