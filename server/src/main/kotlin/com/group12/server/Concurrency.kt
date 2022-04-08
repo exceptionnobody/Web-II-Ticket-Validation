@@ -7,8 +7,8 @@ import java.io.File
 class ConcurrencyModel(lista: List<Pair<Int, Int>>) {
     private val model = Model.build(lista.asIterable().map {
         Measurement.ofConcurrency().andThroughput(it.first.toDouble(), it.second.toDouble())
-    }
-        .toMutableList())
+    }.toMutableList())
+
     //val f = {i:Int -> println("At $i concurrent clients, expect ${model.throughputAtConcurrency(i.toDouble())} req/sec")}
     val g = {i:Int -> println("$i,${model.throughputAtConcurrency(i.toDouble())}")}
 
@@ -17,8 +17,8 @@ class ConcurrencyModel(lista: List<Pair<Int, Int>>) {
             g(i)
     }
 
-    fun printModelToCsv(numPoint: Int) {
-        val file = File("./docs/measures.csv")
+    fun printModelToCsv(numPoint: Int, fileName: String) {
+        val file = File("./docs/$fileName")
         file.writeText("Concurrency,Req/sec\n")
         for (i in 1..numPoint) {
             file.appendText("$i,${model.throughputAtConcurrency(i.toDouble())}\n")
@@ -28,7 +28,6 @@ class ConcurrencyModel(lista: List<Pair<Int, Int>>) {
 }
 
 fun main(){
-
     //val value8 = listOf((1 to 795), (2 to 1693), (4 to 1884),(8 to 1725), (16 to 1801), (32 to 1673), (64 to 1674))
     //val value8 = listOf((1 to 779), (2 to 1668), (4 to 1535),(8 to 1576), (16 to 1440), (32 to 1558), (64 to 1549))
     //val value8 = listOf((1 to 1883), (2 to 4704), (4 to 5070),(8 to 5076), (16 to 5113), (32 to 4823), (64 to 5312))
@@ -36,5 +35,5 @@ fun main(){
     val value8 = listOf((1 to 832), (2 to 1165), (4 to 1704),(8 to 1811), (16 to 1530), (32 to 1538), (64 to 1253))
     val measures = ConcurrencyModel(value8)
     measures.constructAngPrintModel(500)
-    measures.printModelToCsv(500)
+    measures.printModelToCsv(500, "measures.csv")
 }

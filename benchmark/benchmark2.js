@@ -1,7 +1,7 @@
 'use strict';
 const jwt = require('jsonwebtoken');
 
-//change Max range for tickets ids
+// Changes max range for tickets ids
 const testValue=2000
 
 module.exports =  function() {
