@@ -17,8 +17,8 @@ Repository for the Lab 2 assignment of the Web Applications II course at Polytec
 3. Install jsonwebtoken: ```npm install jsonwebtoken```
 4. Start the server
 5. Run the benchmark clients benchmark1 or benchmark2:
-   1. ```loadtest -p benchmark1.js -n [number-of-requests] -c [number-of-concurrent-clients] -T application/json http:://localhost:8080/validate```
-   2. ```loadtest -p benchmark2.js -n [number-of-requests] -c [number-of-concurrent-clients] -T application/json http:://localhost:8080/validate```
+   1. ```loadtest -p benchmark1.js -n [number-of-requests] -c [number-of-concurrent-clients] -T application/json http://localhost:8080/validate```
+   2. ```loadtest -p benchmark2.js -n [number-of-requests] -c [number-of-concurrent-clients] -T application/json http://localhost:8080/validate```
 
 benckmark1.js is used to verify for point 5 while benchmark2.js was used in point 6 and 7.
 
